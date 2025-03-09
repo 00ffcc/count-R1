@@ -298,15 +298,18 @@ def compute_reward_metrics(batch):
 
     reward_metrics = {}
     reward_metrics["reward/mean"] = torch.mean(reward_tensor).detach().item()
-    # Calculate all_correct ratio (value == 3)
-    all_correct = torch.sum(reward_tensor == 3).float() / reward_tensor.numel()
+    # Calculate all_correct ratio (value == 2)
+    all_correct = torch.sum(reward_tensor == 2).float() / reward_tensor.numel()
     reward_metrics["reward/all_correct_ratio"] = all_correct.detach().item()
-    # Calculate format_error ratio (value == -1)
-    format_error = torch.sum(reward_tensor == -1).float() / reward_tensor.numel()
+    # Calculate format_error ratio (value == -2)
+    format_error = torch.sum(reward_tensor == -2).float() / reward_tensor.numel()
     reward_metrics["reward/format_error_ratio"] = format_error.detach().item()
-    # Calculate wrong answer ratio (value == -1)
-    format_error = torch.sum(reward_tensor == -0.5).float() / reward_tensor.numel()
+    # Calculate wrong answer ratio (value == 1)
+    format_error = torch.sum(reward_tensor == 1).float() / reward_tensor.numel()
     reward_metrics["reward/wrong_answer_ratio"] = format_error.detach().item()
+    # Calculate wrong answer format ratio (value == 0) (<ans>里面不是int)
+    format_error = torch.sum(reward_tensor == 0).float() / reward_tensor.numel()
+    reward_metrics["reward/wrong_answer_format_ratio"] = format_error.detach().item()
     
     return reward_metrics
 
@@ -619,6 +622,7 @@ class RayPPOTrainer(object):
 
                 with _timer('step', timing_raw):
                     # generate a batch
+                    print("generating")
                     with _timer('gen', timing_raw):
                         gen_batch_output = self.actor_rollout_wg.generate_sequences(gen_batch)
 
@@ -637,6 +641,7 @@ class RayPPOTrainer(object):
                     batch.meta_info['global_token_num'] = torch.sum(batch.batch['attention_mask'], dim=-1).tolist()
 
                     if self.use_reference_policy:
+                        print("computing ref_log_prob")
                         # compute reference log_prob
                         with _timer('ref', timing_raw):
                             ref_log_prob = self.ref_policy_wg.compute_ref_log_prob(batch)
@@ -644,15 +649,18 @@ class RayPPOTrainer(object):
 
                     # compute values
                     if self.use_critic:
+                        print("computing values")
                         with _timer('values', timing_raw):
                             values = self.critic_wg.compute_values(batch)
                             batch = batch.union(values)
 
                     with _timer('adv', timing_raw):
+                        print("computing advantages")
                         # compute scores. Support both model and function-based.
                         # We first compute the scores using reward model. Then, we call reward_fn to combine
                         # the results from reward model and rule-based results.
                         if self.use_rm:
+                            print("computing rm_score")
                             # we first compute reward model score
                             reward_tensor = self.rm_wg.compute_rm_score(batch)
                             batch = batch.union(reward_tensor)
@@ -679,14 +687,17 @@ class RayPPOTrainer(object):
 
                     # update critic
                     if self.use_critic:
+                        print("updating critic")
                         with _timer('update_critic', timing_raw):
                             critic_output = self.critic_wg.update_critic(batch)
                         critic_output_metrics = reduce_metrics(critic_output.meta_info['metrics'])
                         metrics.update(critic_output_metrics)
 
                     # implement critic warmup
+
+                    # update actor
                     if self.config.trainer.critic_warmup <= self.global_steps:
-                        # update actor
+                        print("updating actor")
                         with _timer('update_actor', timing_raw):
                             actor_output = self.actor_rollout_wg.update_actor(batch)
                         actor_output_metrics = reduce_metrics(actor_output.meta_info['metrics'])
@@ -699,6 +710,7 @@ class RayPPOTrainer(object):
                     # validate
                     if self.val_reward_fn is not None and self.config.trainer.test_freq > 0 and \
                         self.global_steps % self.config.trainer.test_freq == 0:
+                        print("testing")
                         with _timer('testing', timing_raw):
                             val_metrics: dict = self._validate()
                         metrics.update(val_metrics)

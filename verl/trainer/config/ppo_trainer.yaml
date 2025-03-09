@@ -47,6 +47,7 @@ actor_rollout_ref:
       grad_offload: False
       optimizer_offload: False
       fsdp_size: -1
+      model_dtype: bfloat16
   ref:
     fsdp_config:
       param_offload: False
