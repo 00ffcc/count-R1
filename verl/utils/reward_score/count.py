@@ -154,8 +154,8 @@ def compute_score(solution_str: str,
     Returns:
         Total score (sum of format and answer rewards)
     """
-    print("\n" + "="*80)
-    print(" Processing New Sample ".center(80, '='))
+    # print("\n" + "="*80)
+    # print(" Processing New Sample ".center(80, '='))
     
     # 删掉system prompt
     solution_str = re.sub(r"<\|im_start\|>system.*?<\|im_end\|>", "", solution_str, flags=re.DOTALL)
@@ -182,11 +182,11 @@ def compute_score(solution_str: str,
     
     total_score = answer_score + format_score
 
-    print("\n" + "-"*80)
-    print(f" Final Score ".center(80, '-'))
-    print(f"  Format: {format_score}")
-    print(f"  Answer: {answer_score}")
-    print(f"  Total: {total_score}")
-    print("="*80 + "\n")
+    # print("\n" + "-"*80)
+    # print(f" Final Score ".center(80, '-'))
+    # print(f"  Format: {format_score}")
+    # print(f"  Answer: {answer_score}")
+    # print(f"  Total: {total_score}")
+    # print("="*80 + "\n")
 
     return total_score

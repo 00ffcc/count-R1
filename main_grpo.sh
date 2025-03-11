@@ -1,5 +1,4 @@
-set -x
-export CUDA_VISIBLE_DEVICES=0,1,2,3
+export CUDA_VISIBLE_DEVICES=1,2,3,4
 MODEL_PATH=/NAS/wujunkang/guizhiyu/LLaMA-Factory/saves/Qwen2.5-1.5B-Instruct/full/train_2025-03-10-17-49-44/weights
 export VLLM_ATTENTION_BACKEND=XFORMERS
 # 获取当前时间，转换为字符串
@@ -9,8 +8,8 @@ EXPERIMENT_NAME=SFT-Qwen2.5-1.5B-$timestamp
 
 python3 -m verl.trainer.main_ppo \
     algorithm.adv_estimator=grpo \
-    data.train_files=data/counting_2_15_train.parquet \
-    data.val_files=data/counting_2_15_valid.parquet \
+    data.train_files=data/counting_3_15_train.parquet \
+    data.val_files=data/counting_3_15_valid.parquet \
     data.train_batch_size=32 \
     data.val_batch_size=64 \
     data.max_prompt_length=400 \

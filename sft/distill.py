@@ -6,8 +6,8 @@ from openai import AsyncOpenAI
 
 # Create async client
 async_client = AsyncOpenAI(
-    api_key="sk-f316b77ea179495f8bd6d4199f86692a",
-    base_url="https://api.deepseek.com/v1"
+    api_key="sk-vazbgordvzhtuctmsruykttigikzxyjvmdcaloeyxyztkmlm",
+    base_url="https://api.siliconflow.cn/v1"
 )
 
 system_prompt = "You are a helpful assistant. The assistant first thinks about the reasoning process and then provides the user with the answer. The reasoning process and answer are enclosed within <think> </think> and <answer> </answer> tags, respectively, i.e., <think> reasoning process here </think><answer> answer here </answer>.  Now the user asks you to solve a logical reasoning problem. After thinking, when you finally reach a conclusion, clearly state the answer within <answer> </answer> tags."
@@ -26,15 +26,17 @@ async def process_sequence(seq, t):
     content = f"How many digits {t} are there in the string {seq}?"
     try:
         response = await async_client.chat.completions.create(
-            model="deepseek-chat",
+            model="deepseek-ai/DeepSeek-R1",
             messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": content},
+                {"role": "user", "content": content+' After thinking, when you finally reach a conclusion, clearly state the answer within <answer> </answer> tags.'},
             ]
         )
         
         gt = seq.count(t)
+        thinking = response.choices[0].message.reasoning_content
         res = response.choices[0].message.content
+        print("thinking: ", thinking)
+        print("answer: ", res)
         matches = list(re.finditer(r'<answer>(.*?)</answer>', res, re.DOTALL))
         
         try:
@@ -45,9 +47,8 @@ async def process_sequence(seq, t):
                 return {
                     "instruction": content,
                     "input": "",
-                    "output": res,
+                    "output": f"<think>\n{thinking}\n</think>\n{res}",
                     "system": system_prompt,
-                    "history": []
                 }
         except (IndexError, ValueError):
             print(f"Could not find valid answer in response for {seq}")
@@ -58,8 +59,9 @@ async def process_sequence(seq, t):
     return None
 
 async def main():
+    max_length = 30
     # Generate sequences
-    sequences = gen_seq(2000, 15, ['0', '1'])
+    sequences = gen_seq(700, max_length, ['0', '1'])
     
     # Process sequences concurrently with a semaphore to limit concurrency
     semaphore = asyncio.Semaphore(10)  # Limit to 10 concurrent requests
@@ -74,7 +76,7 @@ async def main():
     # Filter out None results and save to file
     js = [result for result in results if result is not None]
     
-    with open('count_sft_data.json', 'w') as f:
+    with open(f'count_sft_data_{max_length}.json', 'w') as f:
         json.dump(js, f)
     
     print(f"Successfully processed and saved {len(js)} valid examples")

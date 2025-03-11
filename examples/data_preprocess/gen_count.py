@@ -57,7 +57,7 @@ def gen_gen(seq, split):
 
 
 if __name__ == '__main__':
-    vocab = ['0', '1']
+    vocab = ['0', '1', '2']
     max_length=15
     train_num_words = 1024
     valid_num_words = 128
