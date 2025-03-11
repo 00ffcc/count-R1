@@ -301,15 +301,9 @@ def compute_reward_metrics(batch):
     # Calculate all_correct ratio (value == 2)
     all_correct = torch.sum(reward_tensor == 2).float() / reward_tensor.numel()
     reward_metrics["reward/all_correct_ratio"] = all_correct.detach().item()
-    # Calculate format_error ratio (value == -2)
-    format_error = torch.sum(reward_tensor == -2).float() / reward_tensor.numel()
-    reward_metrics["reward/format_error_ratio"] = format_error.detach().item()
-    # Calculate wrong answer ratio (value == 1)
-    format_error = torch.sum(reward_tensor == 1).float() / reward_tensor.numel()
-    reward_metrics["reward/wrong_answer_ratio"] = format_error.detach().item()
-    # Calculate wrong answer format ratio (value == 0) (<ans>里面不是int)
+    # Calculate format_error ratio (value == 0)
     format_error = torch.sum(reward_tensor == 0).float() / reward_tensor.numel()
-    reward_metrics["reward/wrong_answer_format_ratio"] = format_error.detach().item()
+    reward_metrics["reward/format_error_ratio"] = format_error.detach().item()
     
     return reward_metrics
 

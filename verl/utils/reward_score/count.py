@@ -163,7 +163,7 @@ def compute_score(solution_str: str,
 
     format_valid = validate_response_structure(solution_str)
     
-    matches = list(re.finditer(r'<answer>(.*?)</answer>', processed_str, re.DOTALL))
+    matches = list(re.finditer(r'<answer>(.*?)</answer>', solution_str, re.DOTALL))
 
     try:   
         final_answer = int(matches[-1].group(1).strip())
@@ -180,6 +180,7 @@ def compute_score(solution_str: str,
         answer_score = -answer_reward
         format_score = -format_reward
     
+    total_score = answer_score + format_score
 
     print("\n" + "-"*80)
     print(f" Final Score ".center(80, '-'))

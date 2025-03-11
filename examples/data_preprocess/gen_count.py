@@ -58,7 +58,7 @@ def gen_gen(seq, split):
 
 if __name__ == '__main__':
     vocab = ['0', '1']
-    max_length=10
+    max_length=15
     train_num_words = 1024
     valid_num_words = 128
 
@@ -74,5 +74,5 @@ if __name__ == '__main__':
     valid_dataset = datasets.Dataset.from_generator(gen_gen(valid_words, 'valid'))
 
     # save as parquet
-    train_dataset.to_parquet(f"counting_{len(vocab)}_{max_length}_train.parquet")
-    valid_dataset.to_parquet(f"counting_{len(vocab)}_{max_length}_valid.parquet")
+    train_dataset.to_parquet(f"../../data/counting_{len(vocab)}_{max_length}_train.parquet")
+    valid_dataset.to_parquet(f"../../data/counting_{len(vocab)}_{max_length}_valid.parquet")

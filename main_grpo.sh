@@ -1,11 +1,11 @@
 set -x
-export CUDA_VISIBLE_DEVICES=0,1,2,3,4
-MODEL_PATH=Qwen/Qwen2.5-1.5B-Instruct
+export CUDA_VISIBLE_DEVICES=0,1,2,3
+MODEL_PATH=/NAS/wujunkang/guizhiyu/LLaMA-Factory/saves/Qwen2.5-1.5B-Instruct/full/train_2025-03-10-17-49-44/weights
 export VLLM_ATTENTION_BACKEND=XFORMERS
 # 获取当前时间，转换为字符串
 timestamp=$(date "+%Y-%m-%d_%H-%M-%S")
 # 与experiment_name拼接
-EXPERIMENT_NAME=$MODEL_PATH-$timestamp
+EXPERIMENT_NAME=SFT-Qwen2.5-1.5B-$timestamp
 
 python3 -m verl.trainer.main_ppo \
     algorithm.adv_estimator=grpo \
