@@ -14,3 +14,11 @@ plt.xlabel('length')
 plt.ylabel('frequency')
 plt.title('length distribution')
 plt.savefig('length_distribution.png')
+
+new_data = []
+for i in data:
+    if len(i['output']) < 4000:
+        new_data.append(i)
+
+with open('count_sft_data_30_short.json', 'w') as f:
+    json.dump(new_data, f)

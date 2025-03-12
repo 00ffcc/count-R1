@@ -57,10 +57,10 @@ def gen_gen(seq, split):
 
 
 if __name__ == '__main__':
-    vocab = ['0', '1', '2']
-    max_length=15
-    train_num_words = 1024
-    valid_num_words = 128
+    vocab = ['0', '1']
+    max_length=10
+    train_num_words = 600
+    valid_num_words = 60
 
     all_words = gen_seq(train_num_words + valid_num_words, max_length=max_length, vocab=vocab)
     train_words = all_words[:train_num_words]

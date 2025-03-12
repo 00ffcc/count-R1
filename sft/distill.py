@@ -28,7 +28,7 @@ async def process_sequence(seq, t):
         response = await async_client.chat.completions.create(
             model="deepseek-ai/DeepSeek-R1",
             messages=[
-                {"role": "user", "content": content+' After thinking, when you finally reach a conclusion, clearly state the answer within <answer> </answer> tags.'},
+                {"role": "user", "content": content+' Summarize your thinking in <summary> </summary>. After thinking, when you finally reach a conclusion, clearly state the answer within <answer> </answer> tags.'},
             ]
         )
         
@@ -40,6 +40,7 @@ async def process_sequence(seq, t):
         matches = list(re.finditer(r'<answer>(.*?)</answer>', res, re.DOTALL))
         
         try:
+            summarized_thinking = list(re.finditer(r'<summary>(.*?)</summary>', res, re.DOTALL))[-1].group(1).strip()
             ans = int(matches[-1].group(1).strip())
             print(ans, gt, seq)
             
@@ -47,7 +48,7 @@ async def process_sequence(seq, t):
                 return {
                     "instruction": content,
                     "input": "",
-                    "output": f"<think>\n{thinking}\n</think>\n{res}",
+                    "output": f"<think>\n{summarized_thinking}\n</think>\n<answer>\n{ans}\n</answer>",
                     "system": system_prompt,
                 }
         except (IndexError, ValueError):
@@ -59,9 +60,9 @@ async def process_sequence(seq, t):
     return None
 
 async def main():
-    max_length = 30
+    max_length = 40
     # Generate sequences
-    sequences = gen_seq(700, max_length, ['0', '1'])
+    sequences = gen_seq(1, max_length, ['0', '1'])
     
     # Process sequences concurrently with a semaphore to limit concurrency
     semaphore = asyncio.Semaphore(10)  # Limit to 10 concurrent requests
