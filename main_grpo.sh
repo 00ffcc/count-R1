@@ -10,8 +10,8 @@ EXPERIMENT_NAME=SFT-Qwen2.5-3B-$timestamp
 
 python3 -m verl.trainer.main_ppo \
     algorithm.adv_estimator=grpo \
-    data.train_files=data/counting_2_10_train.parquet \
-    data.val_files=data/counting_2_10_valid.parquet \
+    data.train_files=data/counting_2_15_train.parquet \
+    data.val_files=data/counting_2_15_valid.parquet \
     data.train_batch_size=48 \
     data.val_batch_size=60 \
     data.max_prompt_length=400 \
