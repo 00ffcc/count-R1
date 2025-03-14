@@ -7,9 +7,9 @@
 
 ## task
 
-没错，就是数数，从01串中数出0/1的个数。对于LLM来说，这个问题并没有你听起来这么简单。非reasoning模型完全不能解决这个问题(正确率与随机一样)，SOTA的reasoning模型(R1,o3-mini,claude3.7 thinking)也可以被轻易地构造数据hack掉。
+没错，就是数数，从01串中数出0/1的个数。对于LLM来说，这个问题并没有你听起来这么简单。非reasoning模型完全不能解决这个问题(正确率与随机一样)，SOTA的reasoning模型(R1,o3-mini,claude3.7 thinking)也可以被轻易地构造数据hack掉。(见下图。hint: 答案是20)
 
-![hint: 答案是20](https://github.com/00ffcc/count-R1/blob/main/pics/QQ20250314-170413.jpg)
+![](https://github.com/00ffcc/count-R1/blob/main/pics/QQ20250314-170413.jpg)
 
 ## result
 
