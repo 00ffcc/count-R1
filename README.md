@@ -1,36 +1,21 @@
 
-# Logic-RL
+<h1 align="center">Count-R1</h1>
 
-## 📢 **Our detailed technical report is released!** 
+<div align="center">
+    在数数任务上复现Deepseek-R1 ZERO
+</div>
 
-<a href='https://arxiv.org/abs/2502.14768'><img src='https://img.shields.io/badge/arXiv-2502.14768-b31b1b.svg'></a> &nbsp;
+## task
 
-Logic-RL: Unleashing LLM Reasoning with Rule-Based Reinforcement Learning 
----
+没错，就是数数，从01串中数出0/1的个数。对于LLM来说，这个问题并没有你听起来这么简单。非reasoning模型完全不能解决这个问题(正确率与随机一样)，SOTA的reasoning模型(R1,o3-mini,claude3.7 thinking)也可以被轻易地构造数据hack掉。![image](https://github.com/user-attachments/assets/833202a5-a4de-46bf-9f92-b2333cd6b030)
 
-<table>
-  <tr>
-    <td align="center">
-      <img src="./pics/teaser.png" width="800" alt="Teaser Image">
-    </td>
-  </tr>
-  <tr>
-    <td align="center">Main results</td>
-  </tr>
-</table>
+## result
 
----
+我在Qwen2.5 3B上成功复现了R1-zero(不使用冷启动)，观察到随着step的增加，response length和正确率不断同步增加。比较可惜的是没有观察到aha moment。
+![image](https://github.com/user-attachments/assets/cc4ead0c-18eb-4c23-85c1-5f1264938c3e)
 
-## Benchmark
-
-| Model                                                             | 2ppl | 3ppl | 4ppl | 5ppl | 6ppl | 7ppl | 8ppl |
-|------------------------------------------------------------------------|------|------|------|------|------|------|------|
-| o3-mini-high                | 0.99 | 0.98 | 0.97 | 0.95 | 0.94 | 0.89 | 0.83 |
-| o1-2024-12-17               | 0.83 | 0.51 | 0.38 | 0.38 | 0.35 | 0.30 | 0.20 |
-| GPT-4o                      | 0.68 | 0.57 | 0.49 | 0.32 | 0.23 | 0.21 | 0.11 |
-| Deepseek-Math-7b            | 0.35 | 0.21 | 0.08 | 0.06 | 0.02 | 0.00 | 0.00 |
-| Qwen2.5-7B-Instruct-1M      | 0.49 | 0.40 | 0.25 | 0.11 | 0.02 | 0.06 | 0.01 |
-| Qwen2.5-7B-Logic-RL (ours)  | 0.99 | 0.99 | 0.94 | 0.92 | 0.91 | 0.80 | 0.67 |
+我还在Qwen2.5 3B和1.5B上使用不同的冷启动数据进行了实验。
+![image](https://github.com/user-attachments/assets/e361825c-8125-4eaf-a29e-0047838d350a)
 
 
 ---
@@ -38,8 +23,7 @@ Logic-RL: Unleashing LLM Reasoning with Rule-Based Reinforcement Learning
 ## Installation
 
 ```bash
-conda create -n logic python=3.9
-pip install torch==2.4.0 --index-url https://download.pytorch.org/whl/cu121
+conda create -n count python=3.9
 pip3 install vllm==0.6.3 ray
 pip3 install flash-attn --no-build-isolation
 pip install -e .  # For verl integration
@@ -48,33 +32,10 @@ pip install wandb IPython matplotlib
 
 ---
 
-## Data Preparation
-
-You can directly use /data.
-
-For your own data generation, here's a demo:
-
-### Base Model
-```bash
-python ./examples/data_preprocess/kk.py \
-    --local_dir {processed_data_path} \
-    --data_path {raw_data_path}
-```
-
-### Instruct Model
-```bash
-python ./examples/data_preprocess/kk.py \
-    --template_type=qwen-instruct \
-    --local_dir {processed_data_path} \
-    --data_path {raw_data_path}
-```
-
----
-
 ## Training Execution
 ```bash
-conda activate logic
-bash main_grpo.sh  # 4×A100 80G
+conda activate count
+bash main_grpo.sh  # 6x3090
 ```
 
 ---
@@ -83,34 +44,14 @@ bash main_grpo.sh  # 4×A100 80G
 
 | Component              | Location                          |
 |------------------------|-----------------------------------|
-| Reward Modeling     | `verl/utils/reward_score/kk.py`   |
-| Data Preprocessing   | `examples/data_preprocess/kk.py`  |
+| Reward Modeling        | `verl/utils/reward_score/count.py`   |
+| Data Preprocessing     | `examples/data_preprocess/count.py`  |
+| Data distrill          | `sft/distrill.py`  |
 
----
-
-
-## Citation
-```
-@misc{xie2025logicrlunleashingllmreasoning,
-      title={Logic-RL: Unleashing LLM Reasoning with Rule-Based Reinforcement Learning}, 
-      author={Tian Xie and Zitian Gao and Qingnan Ren and Haoming Luo and Yuqian Hong and Bryan Dai and Joey Zhou and Kai Qiu and Zhirong Wu and Chong Luo},
-      year={2025},
-      eprint={2502.14768},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2502.14768}, 
-}
-```
 
 ---
 
 ## Acknowledgements
 - [Verl](https://github.com/volcengine/verl) 🔗
-- [TinyZero](https://github.com/Jiayi-Pan/TinyZero) 🔗
-- [Knights and Knaves (K&K) puzzles dataset](https://github.com/AlphaPav/mem-kk-logic) 🔗
+- [Logic-RL](https://github.com/Unakar/Logic-RL) 🔗
 
----
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=Unakar/Logic-RL&type=Date)](https://star-history.com/#Unakar/Logic-RL&Date)
