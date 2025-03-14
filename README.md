@@ -1,4 +1,3 @@
-![image](https://github.com/user-attachments/assets/2fb2fe5a-7a55-4816-9b7a-a53d3f5278cf)
 <h1 align="center">Count-R1</h1>
 
 <div align="center">
