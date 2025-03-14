@@ -57,7 +57,7 @@ bash main_grpo.sh  # 6x3090
 |------------------------|-----------------------------------|
 | Reward Modeling        | `verl/utils/reward_score/count.py`   |
 | Data Preprocessing     | `examples/data_preprocess/count.py`  |
-| Data distrill          | `sft/distrill.py`  |
+| Data distill          | `sft/distill.py`  |
 
 
 ---
